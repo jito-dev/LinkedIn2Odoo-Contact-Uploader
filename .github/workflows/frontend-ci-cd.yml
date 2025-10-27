@@ -13,6 +13,10 @@ jobs:
     # This job runs on your self-hosted runner
     runs-on: [self-hosted, jito-infra-runner]
     
+    # Add the permissions block to grant write access
+    permissions:
+      contents: write
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
