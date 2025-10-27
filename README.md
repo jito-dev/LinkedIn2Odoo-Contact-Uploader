@@ -2,6 +2,8 @@
 
 A Chrome Extension and backend service designed to scrape LinkedIn profiles and create or update contacts in Odoo with a single click. Includes a campaign management system to automatically tag new contacts.
 
+https://github.com/user-attachments/assets/523fa889-7417-43d0-b1f4-5d8878593435
+
 ## Features
 
 - **One-Click Contact Creation:** A floating button is injected directly onto LinkedIn profile pages to create or update an Odoo contact instantly.
@@ -209,3 +211,4 @@ This project is designed to be deployed on a server using Docker.
 
             ./pull-stop-start.sh
       _(This runs `git pull`, stops, and restarts the server)_
+
