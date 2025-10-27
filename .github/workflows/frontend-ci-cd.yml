@@ -1,0 +1,55 @@
+name: Frontend - Build and Create GitHub Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci-cd.yml'
+
+jobs:
+  build-and-release:
+    # This job runs on your self-hosted runner
+    runs-on: [self-hosted, jito-infra-runner]
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install zip
+        run: |
+          # Ensure zip is installed on the runner.
+          # This command works for Debian/Ubuntu. Adjust if your runner uses a different OS.
+          sudo apt-get update && sudo apt-get install -y zip
+        
+      - name: Build Extension ZIP
+        run: |
+          echo "Zipping frontend directory for release..."
+          cd frontend
+          zip -r ../extension-release.zip . -x "*.DS_Store"
+          cd ..
+          echo "Release ZIP file created."
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: frontend-${{ github.sha }}
+          release_name: Frontend Release ${{ github.sha }}
+          body: |
+            Automated release for frontend changes.
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./extension-release.zip
+          asset_name: extension-release.zip
+          asset_content_type: application/zip

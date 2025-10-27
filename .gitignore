@@ -1,0 +1,7 @@
+.venv
+__pycache__
+test_connection.py
+campaigns.db
+.env
+*.txt
+*.zip

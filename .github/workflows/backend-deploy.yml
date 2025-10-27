@@ -1,0 +1,41 @@
+name: CI/CD Docker Deployment (Production)
+
+on:
+  push:
+    branches:
+      - main # Triggers on push to the main branch
+    paths:
+      - 'backend/**'  # Only run if backend code changes
+      - 'Dockerfile'
+      - 'docker-compose-prod.yml'
+      - '.github/workflows/backend-deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, jito-infra-runner] # Must run on your specific runner
+    
+    env:
+      DEPLOY_DIR: ${{ secrets.DEPLOY_SCRIPT_PATH }} # Set from GitHub Secrets
+
+    steps:
+      - name: Deploy Latest Code
+        run: |
+          echo "Starting deployment..."
+          echo "Deployment Directory: $DEPLOY_DIR"
+          
+          # 1. Navigate to the actual deployment directory on the runner
+          # This is NOT the temporary GitHub Actions workspace
+          echo "Changing directory to $DEPLOY_DIR"
+          cd $DEPLOY_DIR
+          
+          # 2. Ensure scripts are executable (can also be done once manually)
+          chmod +x ./stop-prod.sh
+          chmod +x ./deploy-prod.sh
+          chmod +x ./pull-stop-start.sh
+          
+          # 3. Pull latest code, stop, and restart the containers
+          # This single script handles the entire deployment process
+          echo "Executing full deployment script: ./pull-stop-start.sh"
+          ./pull-stop-start.sh
+          
+          echo "Deployment complete. Services are restarted."

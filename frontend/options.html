@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LinkedIn → Odoo Settings</title>
+    <style>
+      body { 
+        font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+        margin: 0;
+        background-color: #f8fafc;
+        color: #1e293b;
+        display: flex;
+        min-height: 100vh;
+      }
+      .container {
+        display: flex;
+        width: 100%;
+      }
+      .panel {
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      .left-panel {
+        width: 50%;
+        border-right: 1px solid #e2e8f0;
+      }
+      .right-panel {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+      }
+      h2, h3 { 
+        color: #1976d2; 
+        border-bottom: 2px solid #e2e8f0; 
+        padding-bottom: 10px;
+        margin-top: 0;
+      }
+      h3 {
+        font-size: 1.2em;
+        margin-top: 20px;
+      }
+      .row { margin-bottom: 15px; }
+      label { 
+        display: block; 
+        font-weight: 600; 
+        margin-bottom: 6px; 
+        color: #334155;
+      }
+      input, select { 
+        padding: 10px; 
+        width: 100%; 
+        box-sizing: border-box; 
+        border: 1px solid #cbd5e1; 
+        border-radius: 6px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      input:focus, select:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        outline: none;
+      }
+      .actions { 
+        display: flex; 
+        gap: 12px; 
+        margin-top: 20px;
+      }
+      button { 
+        padding: 10px 16px; 
+        border: none; 
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      #btnSave { background-color: #4caf50; color: white; flex-grow: 1; }
+      #btnSave:hover { background-color: #388e3c; }
+      #btnTest { background-color: #1976d2; color: white; flex-grow: 1; }
+      #btnTest:hover { background-color: #1565c0; }
+      #btnSaveCampaign { background-color: #1976d2; color: white; margin-top: 10px;}
+      #btnSaveCampaign:hover { background-color: #1565c0; }
+      
+      .status { 
+        margin-top: 20px; padding: 12px; border-radius: 6px; font-weight: 500;
+        text-align: center;
+      }
+      .status.success { background-color: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+      .status.error { background-color: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }
+      .status.info { background-color: #eff6ff; color: #3b82f6; border: 1px solid #93c5fd; }
+      .status.pending { background-color: #fffbeb; color: #f59e0b; border: 1px solid #fcd34d; }
+      
+      #campaignList { list-style-type: none; padding: 0; overflow-y: auto; flex-grow: 1; }
+      #campaignList li { background: #fff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-bottom: 10px; cursor: pointer; }
+      #campaignList li:hover { background-color: #f1f5f9; }
+      #campaignList li h4 { margin: 0 0 10px 0; color: #334155; }
+      #campaignList p { margin: 5px 0; font-size: 14px; }
+      .delete-campaign { float: right; background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+
+      .tags-input-wrapper { position: relative; }
+      .tags-container {
+        display: flex; flex-wrap: wrap; gap: 6px; padding: 8px;
+        border: 1px solid #ccc; border-radius: 6px; margin-top: 4px; margin-bottom: 8px;
+        min-height: 40px; background-color: white; max-height: 120px; overflow-y: auto;
+      }
+      .tag-pill {
+        background-color: #e9ecef; padding: 5px 10px; border-radius: 16px; font-size: 13px;
+        display: flex; align-items: center; white-space: nowrap; flex-shrink: 0;
+      }
+      .tag-remove { margin-left: 8px; cursor: pointer; font-weight: bold; color: #6c757d; }
+      .tag-remove:hover { color: #343a40; }
+      .dropdown {
+        position: absolute; background: white; border: 1px solid #ccc; border-radius: 6px;
+        width: 100%; max-height: 150px; overflow-y: auto; z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      .hidden { display: none; }
+      .dropdown-item { padding: 8px 12px; cursor: pointer; }
+      .dropdown-item:hover { background-color: #f1f1f1; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="panel left-panel">
+        <h2>Odoo Connection</h2>
+        <div class="row">
+          <label for="backendUrl">Backend URL</label>
+          <input id="backendUrl" placeholder="https://your-backend-url.com" />
+        </div>
+        <div class="row">
+          <label for="odooBaseUrl">Odoo Base URL</label>
+          <input id="odooBaseUrl" placeholder="https://your-odoo.example.com" />
+        </div>
+        <div class="row">
+          <label for="odooDb">Database</label>
+          <input id="odooDb" placeholder="odoo_db_name" />
+        </div>
+        <div class="row">
+          <label for="odooLogin">Login (Username/Email)</label>
+          <input id="odooLogin" placeholder="user@example.com" />
+        </div>
+        <div class="row">
+          <label for="odooApiToken">API Token</label>
+          <input id="odooApiToken" type="password" placeholder="your-api-token" />
+        </div>
+        <div class="row actions">
+          <button id="btnSave">Save Credentials</button>
+          <button id="btnTest" type="button">Test Connection</button>
+        </div>
+        <p class="status info" id="status">Enter your Odoo credentials and save.</p>
+      </div>
+      <div class="panel right-panel">
+        <h2>Campaigns</h2>
+        <div class="row">
+          <label for="currentCampaign">Set Current Campaign</label>
+          <select id="currentCampaign"></select>
+        </div>
+        <hr>
+        <h3>Create/Edit Campaign</h3>
+        <input type="hidden" id="campaignId">
+        <div class="row">
+            <label for="campaignName">Campaign Name</label>
+            <input id="campaignName" placeholder="e.g., Q4 Tech Recruitment">
+        </div>
+        <div class="row">
+            <label for="campaign-person-tags-input">Person Tags</label>
+            <div class="tags-input-wrapper">
+                <input id="campaign-person-tags-input" placeholder="Select or add a tag and press Enter">
+                <div id="campaign-person-tags-dropdown" class="dropdown hidden"></div>
+            </div>
+            <div id="campaign-person-tags-container" class="tags-container"></div>
+        </div>
+        <div class="row">
+            <label for="campaign-company-tags-input">Company Tags</label>
+            <div class="tags-input-wrapper">
+                <input id="campaign-company-tags-input" placeholder="Select or add a tag and press Enter">
+                <div id="campaign-company-tags-dropdown" class="dropdown hidden"></div>
+            </div>
+            <div id="campaign-company-tags-container" class="tags-container"></div>
+        </div>
+        <button id="btnSaveCampaign">Save Campaign</button>
+        <h3>Existing Campaigns</h3>
+        <ul id="campaignList"></ul>
+      </div>
+    </div>
+
+    <script src="options.js" type="module"></script>
+    <script src="campaigns.js" type="module"></script>
+  </body>
+</html>
+

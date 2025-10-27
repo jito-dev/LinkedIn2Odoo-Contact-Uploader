@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    volumes:
+      # Use a named Docker volume to persist the database
+      # This will store campaigns.db inside the volume
+      - db_data:/app/data
+    env_file:
+      - .env
+    restart: unless-stopped
+
+volumes:
+  # Define the named volume for database persistence
+  db_data:

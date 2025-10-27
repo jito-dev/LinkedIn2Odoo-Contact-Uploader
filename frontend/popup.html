@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { 
+      font-family: 'Inter', sans-serif; 
+      width: 380px; 
+      padding: 15px; 
+      background-color: #f8f9fa;
+      color: #333;
+      padding-bottom: 60px;
+    }
+
+    h3, h4 {
+      color: #005a9c;
+      margin-top: 15px;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    h4 {
+      font-size: 1em;
+      margin-top: 20px;
+    }
+    .campaign-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        background-color: #e9f5ff;
+        padding: 8px;
+        border-radius: 6px;
+    }
+    .campaign-selector label {
+        font-weight: bold;
+        white-space: nowrap;
+        margin: 0;
+    }
+    #currentCampaign {
+        width: 100%;
+        padding: 6px;
+        border: 1px solid #ced4da; 
+        border-radius: 6px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      color: #495057;
+      font-size: 0.9em;
+    }
+
+    input, textarea { 
+      width: 100%; 
+      padding: 10px; 
+      margin-bottom: 12px; 
+      border: 1px solid #ced4da; 
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus {
+        border-color: #005a9c;
+        box-shadow: 0 0 0 2px rgba(0, 90, 156, 0.2);
+        outline: none;
+    }
+
+    .image-preview-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    #photo-preview {
+        width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
+        border: 3px solid #005a9c; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        display: none;
+    }
+
+    .tags-container, .info-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-top: 4px;
+        margin-bottom: 8px;
+        min-height: 40px;
+        background-color: white;
+        max-height: 120px;
+        overflow-y: auto;
+    }
+
+    .tag-pill {
+        background-color: #e9ecef;
+        padding: 5px 10px;
+        border-radius: 16px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .tag-remove {
+        margin-left: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #6c757d;
+    }
+    .tag-remove:hover { color: #343a40; }
+
+    #upload { 
+      width: 100%; background: #28a745; color: white; border: none; 
+      padding: 12px; cursor: pointer; border-radius: 6px;
+      font-weight: bold; font-size: 1em; margin-top: 15px;
+      transition: background 0.3s;
+    }
+    #upload:hover:not(:disabled) { background: #218838; }
+    #upload:disabled { background: #aaa; cursor: not-allowed; }
+    
+    #result {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 15px;
+        padding: 10px; 
+        border-radius: 6px;
+        font-weight: bold; 
+        text-align: center;
+        z-index: 10001;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+    }
+    #result.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+    .tags-input-wrapper {
+        position: relative;
+    }
+    #tags-dropdown, #company-tags-dropdown {
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        width: 100%;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .dropdown-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+    .dropdown-item:hover {
+        background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <h3>LinkedIn to Odoo</h3>
+  <div class="campaign-selector">
+      <label for="currentCampaign">Campaign:</label>
+      <select id="currentCampaign"></select>
+  </div>
+  
+  <div id="form">
+    <div class="image-preview-group">
+        <img id="photo-preview" src="" alt="Profile Image">
+        <input id="photo" placeholder="Photo URL (auto-scraped)" title="Profile Photo URL"> 
+    </div>
+    
+    <h4>Person Details</h4>
+    <input id="name" placeholder="Full name / Company" title="Full Name">
+    <input id="job_position" placeholder="Job position" title="Job Position">
+    <input id="email" placeholder="Email" title="Email Address">
+    <input id="phone" placeholder="Phone" title="Phone Number">
+    <input id="website" placeholder="Website (LinkedIn Profile)" title="Website URL">
+    <!-- ROLLBACK: Reverted to 'city' -->
+    <input id="city" placeholder="City" title="City/Location">
+    
+    <label for="tags-input">Person Tags</label>
+    <div class="tags-input-wrapper">
+        <input id="tags-input" placeholder="Select or add a tag and press Enter">
+        <div id="tags-dropdown" class="hidden"></div>
+    </div>
+    <div id="tags-container" class="tags-container"></div>
+    
+    <label for="info-input">Person Additional Info</label>
+    <input id="info-input" placeholder="Add info and press Enter">
+    <div id="info-container" class="info-container"></div>
+    
+    <h4>Company Details</h4>
+    <input id="company" placeholder="Company Name" title="Company Name">
+    <input id="company_linkedin_url" placeholder="Company LinkedIn URL" title="Company LinkedIn URL">
+    <input id="company_photo" placeholder="Company Photo URL" title="Company Photo URL">
+
+    <label for="company-tags-input">Company Tags</label>
+    <div class="tags-input-wrapper">
+        <input id="company-tags-input" placeholder="Select or add a tag and press Enter">
+        <div id="company-tags-dropdown" class="hidden"></div>
+    </div>
+    <div id="company-tags-container" class="tags-container"></div>
+
+    <label for="company-info-input">Company Additional Info</label>
+    <input id="company-info-input" placeholder="Add info and press Enter">
+    <div id="company-info-container" class="info-container"></div>
+
+    <button id="upload">Upload Contact to Odoo</button>
+  </div>
+  
+  <div id="result" class="info">Awaiting profile data...</div>
+
+  <input type="hidden" id="odoo_server">
+  <input type="hidden" id="odoo_db_name">
+  <input type="hidden" id="username">
+  <input type="hidden" id="access_token">
+  <input type="hidden" id="backend_url">
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
+
