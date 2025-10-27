@@ -17,11 +17,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install zip
-        run: |
-          # Ensure zip is installed on the runner.
-          # This command works for Debian/Ubuntu. Adjust if your runner uses a different OS.
-          sudo apt-get update && sudo apt-get install -y zip
+      # This step has been removed.
+      # You must install 'zip' on your runner manually one time:
+      # sudo apt-get update && sudo apt-get install -y zip
         
       - name: Build Extension ZIP
         run: |
@@ -53,3 +51,4 @@ jobs:
           asset_path: ./extension-release.zip
           asset_name: extension-release.zip
           asset_content_type: application/zip
+
