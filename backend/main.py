@@ -35,6 +35,7 @@ app = FastAPI(
 # Initialize the SQLite database on application startup
 db.init_db()
 
+'''
 # Define allowed origins for CORS (Cross-Origin Resource Sharing)
 allowed_origins = [
     "https://www.linkedin.com", # LinkedIn for the content script
@@ -50,12 +51,13 @@ if chrome_origins_str:
     logger.info(f"Configured allowed origins: {allowed_origins}")
 else:
     logger.warning("CHROME_EXTENSION_ORIGIN environment variable is not set. Chrome extension requests may be blocked by CORS policy.")
-
+'''
 
 # Configure CORS middleware    
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    # allow_origins=allowed_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
