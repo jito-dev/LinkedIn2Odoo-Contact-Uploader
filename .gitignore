@@ -5,3 +5,5 @@ campaigns.db
 .env
 *.txt
 *.zip
+*new*
+/streamlit_app
